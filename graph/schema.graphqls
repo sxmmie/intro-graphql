@@ -1,0 +1,45 @@
+# The Query type defines all read operations
+type Query {
+
+  // Get all todos
+  todos: [Todo!]!
+
+  // Get a specific todo by ID
+  todo(id: ID!): Todo
+
+  # Get todos filtered by completion status
+  todoByStatus(done: Boolean!): [Todo!]!
+}
+
+type Mutation {
+
+  # Create a new todo
+  createTodo(input: NewTodo!): Todo!
+
+  // Update an existing todo
+  updateTodo(id: ID!, input: UpdateTodo!): Todo
+
+  # delete a todo
+  deleteTodo(id: ID!): Boolean!
+
+  # Toggle todo completion status
+  toggleTodo(id: ID!): Todo
+}
+
+type Todo {
+  id: ID!
+  text: String!
+  done: Boolean!
+  createdAt: String!
+}
+
+# Input type for creating todos
+input NewTodo {
+  text: String!
+}
+
+# Input type for updating Todo
+input UpdateTodo {
+  text: String
+  done: Boolean
+}
