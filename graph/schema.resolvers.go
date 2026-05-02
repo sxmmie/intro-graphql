@@ -14,9 +14,33 @@ import (
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+	todo := r.TodoStore.Create(input.Test)
+
+	return &model.Todo{
+		ID; todo.ID,
+		Text: todo.Text,
+		Done: todo.Done,
+		CreatedAt: todo.CreatedAt,
+	}, nil
 }
 
+func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input model.UpdateTodo) (*model.Todo, error) {
+	todo := r.TodoStore.Update(id, input.Text, input.Done)
+	if todo != nil {
+		return nil, fmt.Errorf("todo not found")
+	}
+
+	return &model.Todo{
+		ID; todo.ID,
+		Text: todo.Text,
+		Done: todo.Done,
+		CreatedAt: todo.CreatedAt,
+	}, nil
+}
+
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id string,) (bool, error) {
+	return r.TodoStore.Delete(id), nil
+}
 // Todos is the resolver for the todos field.
 // func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 // 	panic(fmt.Errorf("not implemented: Todos - todos"))
