@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/sxmmie/intro-graphql/graph"
+	"github.com/sxmmie/intro-graphql/models"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -22,7 +23,11 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	resolver := &graph.Resolver{
+		TodoStore: models.NewTodoStore(),
+	}
+
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
