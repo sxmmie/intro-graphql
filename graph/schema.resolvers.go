@@ -38,8 +38,12 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input mode
 	}, nil
 }
 
-func (r *mutationResolver) DeleteTodo(ctx context.Context, id string,) (bool, error) {
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (bool, error) {
 	return r.TodoStore.Delete(id), nil
+}
+
+func (r *mutationResolver) ToggleTodo(ctx context.Context, id string) (*model.Todo, error) {
+	panic()
 }
 // Todos is the resolver for the todos field.
 // func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
