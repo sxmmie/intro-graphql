@@ -1,10 +1,9 @@
 # The Query type defines all read operations
 type Query {
-
-  // Get all todos
+  # Get all todos
   todos: [Todo!]!
 
-  // Get a specific todo by ID
+  # Get a specific todo by ID
   todo(id: ID!): Todo
 
   # Get todos filtered by completion status
@@ -12,11 +11,10 @@ type Query {
 }
 
 type Mutation {
-
   # Create a new todo
   createTodo(input: NewTodo!): Todo!
 
-  // Update an existing todo
+  # Update an existing todo
   updateTodo(id: ID!, input: UpdateTodo!): Todo
 
   # delete a todo
