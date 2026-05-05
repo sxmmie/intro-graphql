@@ -10,3 +10,7 @@ import "github.com/sxmmie/intro-graphql/models"
 type Resolver struct {
 	TodoStore *models.TodoStore
 }
+
+// type Mutation struct {
+// 	TodoStore *models.TodoStore
+// }
