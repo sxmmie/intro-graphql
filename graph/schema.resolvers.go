@@ -31,12 +31,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 
 	todo := r.TodoStore.Create(input.Text)
 
-	return &model.Todo{
-		ID:        todo.ID,
-		Text:      todo.Text,
-		Done:      todo.Done,
-		CreatedAt: todo.CreatedAt,
-	}, nil
+	return convertTodo(todo), nil
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
@@ -49,12 +44,7 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, id string, input mode
 		}
 	}
 
-	return &model.Todo{
-		ID:        todo.ID,
-		Text:      todo.Text,
-		Done:      todo.Done,
-		CreatedAt: todo.CreatedAt,
-	}, nil
+	return convertTodo(todo), nil
 }
 
 // DeleteTodo is the resolver for the deleteTodo field.
@@ -72,30 +62,14 @@ func (r *mutationResolver) ToggleTodo(ctx context.Context, id string) (*model.To
 		}
 	}
 
-	return &model.Todo{
-		ID:        todo.ID,
-		Text:      todo.Text,
-		Done:      todo.Done,
-		CreatedAt: todo.CreatedAt,
-	}, nil
+	return convertTodo(todo), nil
 }
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	todos := r.TodoStore.GetAll()
 
-	result := make([]*model.Todo, len(todos))
-
-	for i, todo := range todos {
-		result[i] = &model.Todo{
-			ID:        todo.ID,
-			Text:      todo.Text,
-			Done:      todo.Done,
-			CreatedAt: todo.CreatedAt,
-		}
-	}
-
-	return result, nil
+	return convertTodos(todos), nil
 }
 
 // Todo is the resolver for the todo field
@@ -109,29 +83,14 @@ func (r *queryResolver) Todo(ctx context.Context, id string) (*model.Todo, error
 		}
 	}
 
-	return &model.Todo{
-		ID:        todo.ID,
-		Text:      todo.Text,
-		Done:      todo.Done,
-		CreatedAt: todo.CreatedAt,
-	}, nil
+	return convertTodo(todo), nil
 }
 
 // TodoByStatus is the resolver for the todoByStatus field.
 func (r *queryResolver) TodoByStatus(ctx context.Context, done bool) ([]*model.Todo, error) {
 	todos := r.TodoStore.GetByStatus(done)
 
-	result := make([]*model.Todo, len(todos))
-	for i, todo := range todos {
-		result[i] = &model.Todo{
-			ID:        todo.ID,
-			Text:      todo.Text,
-			Done:      todo.Done,
-			CreatedAt: todo.CreatedAt,
-		}
-	}
-
-	return result, nil
+	return convertTodos(todos), nil
 }
 
 // Mutation returns MutationResolver implementation.
