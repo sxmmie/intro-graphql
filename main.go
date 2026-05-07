@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/sxmmie/intro-graphql/graph"
+	"github.com/sxmmie/intro-graphql/middleware"
 	"github.com/sxmmie/intro-graphql/models"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -39,6 +40,11 @@ func main() {
 	srv.Use(extension.AutomaticPersistedQuery{
 		Cache: lru.New[string](100),
 	})
+
+	// Custom middleware
+	var hdr http.Handler = srv
+	hdr = middleware.Logging(hdr)
+	hdr = middleware.RequestID(hdr)
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
