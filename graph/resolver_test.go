@@ -68,6 +68,44 @@ func TestDeleteTodo(t *testing.T) {
 	}
 }
 
+func TestUpdateTodo(t *testing.T) {
+	store := models.NewTodoStore()
+	resolver := &Resolver{TodoStore: store}
+
+	// 1. Create a todo first
+	input := model.NewTodo{Text: "Test todo"}
+	created, err := resolver.Mutation().CreateTodo(context.Background(), input)
+	if err != nil {
+		t.Fatalf("failed to create todo", err)
+	}
+
+	// 2. Update it using the returned ID
+	newText := "Updated todo"
+	done := true
+	updateInput := model.UpdateTodo{
+		Text: &newText,
+		Done: &done,
+	}
+
+	updated, err := resolver.Mutation().UpdateTodo(context.Background(), created.ID, updateInput)
+	if err != nil {
+		t.Fatalf("failed to update todo", err)
+	}
+
+	// 3. Assert the fields were updated
+	if updated.Text != newText {
+		t.Errorf("expected text %q, got %q", newText, updated.Text)
+	}
+
+	if updated.Done != done {
+		t.Errorf("expected done %v, got %v", done, updated.Done)
+	}
+
+	if updated.ID != created.ID {
+		t.Errorf("expected ID %s, got %s", created.ID, updated.ID)
+	}
+}
+
 func TestGetTodos(t *testing.T) {
 	store := models.NewTodoStore()
 	resolver := &Resolver{TodoStore: store}
@@ -82,6 +120,21 @@ func TestGetTodos(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Len(t, todos, 2)
+}
+
+func TestGetTodo(t *testing.T) {
+	store := models.NewTodoStore()
+	resolver := &Resolver{TodoStore: store}
+
+	created := store.Create("Todo 1")
+
+	todo, err := resolver.Query().Todo(context.Background(), created.ID)
+	if err != nil {
+		t.Fatalf("failed to get todo", err)
+	}
+
+	assert.NoError(t, err)
+	assert.Equal(t, "Todo 1", todo)
 }
 
 func generateString(length int) string {
