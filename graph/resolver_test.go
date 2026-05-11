@@ -32,6 +32,9 @@ func TestCreateTodo_Validation_Errors(t *testing.T) {
 	input := model.NewTodo{Text: " "}
 
 	todo, err := resolver.Mutation().CreateTodo(context.Background(), input)
+	if err != nil {
+		t.Fatalf("failed to create todo: %v", err)
+	}
 
 	assert.Nil(t, todo)
 	assert.Error(t, err)
@@ -76,7 +79,7 @@ func TestUpdateTodo(t *testing.T) {
 	input := model.NewTodo{Text: "Test todo"}
 	created, err := resolver.Mutation().CreateTodo(context.Background(), input)
 	if err != nil {
-		t.Fatalf("failed to create todo", err)
+		t.Fatalf("failed to create todo: %v", err)
 	}
 
 	// 2. Update it using the returned ID
@@ -89,7 +92,7 @@ func TestUpdateTodo(t *testing.T) {
 
 	updated, err := resolver.Mutation().UpdateTodo(context.Background(), created.ID, updateInput)
 	if err != nil {
-		t.Fatalf("failed to update todo", err)
+		t.Fatalf("failed to update todo: %v", err)
 	}
 
 	// 3. Assert the fields were updated
@@ -115,7 +118,7 @@ func TestGetTodos(t *testing.T) {
 
 	todos, err := resolver.Query().Todos(context.Background())
 	if err != nil {
-		t.Fatalf("failed to get all todos", err)
+		t.Fatalf("failed to get all todos: %v", err)
 	}
 
 	assert.NoError(t, err)
@@ -135,6 +138,45 @@ func TestGetTodo(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Todo 1", todo)
+}
+
+func TestTodoByStatus(t *testing.T) {
+	store := models.NewTodoStore()
+	resolver := &Resolver{TodoStore: store}
+
+	// 1. Create a todo (starts as done=false by default)
+	input := model.NewTodo{Text: "Test todo"}
+	created, err := resolver.Mutation().CreateTodo(context.Background(), input)
+	if err != nil {
+		t.Fatalf("failed to create todo: %v", err)
+	}
+
+	// 2. Update it to done=true
+	done := true
+	updateInput := model.UpdateTodo{Done: &done}
+	_, err = resolver.Mutation().UpdateTodo(context.Background(), created.ID, updateInput)
+	if err != nil {
+		t.Fatalf("failed to update todo: %v", err)
+	}
+
+	// 3. Query for completed todos
+	todos, err := resolver.Query().TodoByStatus(context.Background(), true)
+	if err != nil {
+		t.Fatalf("failed to get todos by status: %v", err)
+	}
+
+	// 4. Assert the updated todo appears in results
+	if len(todos) == 0 {
+		t.Fatal("expected at least one todo, got none")
+	}
+
+	if todos[0].ID != created.ID {
+		t.Errorf("expected todo ID %s, got %s", created.ID, todos[0].ID)
+	}
+
+	if todos[0].Done != true {
+		t.Errorf("expected done=true, got done=false")
+	}
 }
 
 func generateString(length int) string {
