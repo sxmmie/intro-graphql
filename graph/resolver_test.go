@@ -179,6 +179,11 @@ func TestTodoByStatus(t *testing.T) {
 	}
 }
 
+func TestToggleTodo(t *testing.T) {
+	store := models.NewTodoStore()
+	resolver := &Resolver{TodoStore: store}
+}
+
 func generateString(length int) string {
 	b := make([]byte, length)
 	for i := range b {
